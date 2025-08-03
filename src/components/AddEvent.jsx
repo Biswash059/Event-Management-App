@@ -4,6 +4,9 @@ import { addEvent } from "../features/event/eventSlice";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 
+import TextInput from "../components/TextInput";
+import TextareaInput from "../components/TextareaInput";
+
 function AddEvent() {
   const events = useSelector((state) => state.event.events);
   const dispatch = useDispatch();
@@ -54,34 +57,30 @@ function AddEvent() {
         Create Event
       </h2>
 
-      <input
+      <TextInput
         name="title"
         placeholder="Event Title"
-        className="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-purple-500"
         value={formData.title}
         onChange={handleChange}
       />
 
-      <textarea
+      <TextareaInput
         name="description"
         placeholder="Event Description"
-        className="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-purple-500"
         value={formData.description}
         onChange={handleChange}
       />
 
-      <input
+      <TextInput
         name="venue"
-        placeholder="Venue"
-        className="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-purple-500"
+        placeholder="Event Venue"
         value={formData.venue}
         onChange={handleChange}
       />
 
-      <input
-        type="date"
+      <TextInput
         name="date"
-        className="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-purple-500"
+        type="Date"
         value={formData.date}
         onChange={handleChange}
       />

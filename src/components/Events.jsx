@@ -132,7 +132,7 @@ function Events() {
             )}
 
             {/* Buttons */}
-            <div className="flex gap-2 mt-4">
+            <div className="flex justify-center md:justify-start gap-4 mt-4">
               {editId === event.id ? (
                 <button
                   onClick={handleUpdate}
@@ -143,14 +143,14 @@ function Events() {
               ) : (
                 <button
                   onClick={() => startEditing(event)}
-                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
+                  className="bg-blue-500 text-center text-white px-4 py-1 rounded hover:bg-blue-600"
                 >
                   Edit
                 </button>
               )}
               <button
                 onClick={() => dispatch(deleteEvent(event.id))}
-                className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
+                className="bg-red-500 text-center text-white px-4 py-1 rounded hover:bg-red-600"
               >
                 Delete
               </button>
