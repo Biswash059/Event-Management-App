@@ -1,25 +1,24 @@
 # Event Management System
 
-A simple and interactive Event Management system built with ReactJS, Redux Toolkit, Tailwind CSS, Material UI, and TypeScript.
+A simple and interactive Event Management web application built with **ReactJS**, **Redux Toolkit**, and **Tailwind CSS**. This application allows users to create, edit, delete, and manage events seamlessly with a responsive and modern UI.
 
----
+## 🚀 Features
 
-## Features
+- ✅ Add new events with title, description, venue, and date
+- 📝 Edit existing events with conflict checking
+- ❌ Delete events
+- 📆 Visual distinction between past and future events
+- 🔔 Real-time user feedback using toast notifications
+- 🎯 Built with modern state management (Redux Toolkit)
 
-- **Add Event:** Create new events with title, description, venue, and date.
-- **View Events:** See a list of all events with details and styling for past events.
-- **Update Event:** Edit existing events with validation to avoid date and venue conflicts.
-- **Delete Event:** Remove events from the list.
-- **Calendar View:** Visualize events in a calendar format.
+## 🛠️ Tech Stack
 
----
+- **ReactJS** – Frontend library
+- **Redux Toolkit** – State management
+- **Tailwind CSS** – Utility-first CSS framework
+- **React Toastify** – Toast notifications
 
-## Tech Stack
+## 📁 Project Structure
 
-- ReactJS (with Hooks)
-- Redux Toolkit for state management
-- Tailwind CSS for styling
-
----
 
 

@@ -1,35 +1,37 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addEvent } from "../features/event/eventSlice";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
 
 function AddEvent() {
+  const events = useSelector((state) => state.event.events);
   const dispatch = useDispatch();
-
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     venue: "",
     date: "",
   });
-
   const [error, setError] = useState("");
-
   const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Validation
     const { title, description, venue, date } = formData;
     if (!title || !description || !venue || !date) {
-      setError("All fields are required");
-      setTimeout(() => setError(""), 2000);
+      toast.error("All fields are required");
+      return;
+    }
+    const isConflict = events.some(
+      (event) =>
+        event.date === date && event.venue.toLowerCase() === venue.toLowerCase()
+    );
+
+    if (isConflict) {
+      toast.error("Event conflict! Same venue and date already exist.");
       return;
     }
 
@@ -39,81 +41,60 @@ function AddEvent() {
     };
 
     dispatch(addEvent(newEvent));
-
-    // Reset form
-    setFormData({
-      title: "",
-      description: "",
-      venue: "",
-      date: "",
-    });
-    setError("");
+    toast.success("Event added successfully");
+    setFormData({ title: "", description: "", venue: "", date: "" });
   };
 
   return (
-    <>
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-xl mx-auto mt-10 bg-zinc-900 p-6 rounded-2xl shadow-xl space-y-5"
+    <form
+      onSubmit={handleSubmit}
+      className="max-w-lg mx-auto mt-10 bg-white p-8 rounded-xl shadow-2xl border border-gray-200 space-y-6"
+    >
+      <h2 className="text-3xl font-bold text-center text-gray-800">
+        Create Event
+      </h2>
+
+      <input
+        name="title"
+        placeholder="Event Title"
+        className="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-purple-500"
+        value={formData.title}
+        onChange={handleChange}
+      />
+
+      <textarea
+        name="description"
+        placeholder="Event Description"
+        className="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-purple-500"
+        value={formData.description}
+        onChange={handleChange}
+      />
+
+      <input
+        name="venue"
+        placeholder="Venue"
+        className="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-purple-500"
+        value={formData.venue}
+        onChange={handleChange}
+      />
+
+      <input
+        type="date"
+        name="date"
+        className="w-full px-4 py-2 rounded border border-gray-300 focus:ring-2 focus:ring-purple-500"
+        value={formData.date}
+        onChange={handleChange}
+      />
+
+      <button
+        type="submit"
+        className="w-full bg-purple-600 text-white py-2 rounded hover:bg-purple-700 transition"
       >
-        <h2 className="text-2xl font-semibold text-white text-center">
-          Add New Event
-        </h2>
+        Add Event
+      </button>
 
-        <div>
-          <label className="block text-gray-300 mb-1">Event Title</label>
-          <input
-            name="title"
-            placeholder="Enter event title"
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-            value={formData.title}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label className="block text-gray-300 mb-1">Description</label>
-          <textarea
-            name="description"
-            placeholder="Enter event description"
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-            value={formData.description}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label className="block text-gray-300 mb-1">Venue</label>
-          <input
-            name="venue"
-            placeholder="Enter venue"
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-            value={formData.venue}
-            onChange={handleChange}
-          />
-        </div>
-
-        <div>
-          <label className="block text-gray-300 mb-1">Event Date</label>
-          <input
-            type="date"
-            name="date"
-            className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-            value={formData.date}
-            onChange={handleChange}
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 rounded-lg transition-all"
-        >
-          Add Event
-        </button>
-
-        {error && <p className="text-red-500 text-center">{error}</p>}
-      </form>
-    </>
+      {error && <p className="text-center text-red-500 font-medium">{error}</p>}
+    </form>
   );
 }
 

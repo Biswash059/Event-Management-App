@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteEvent, updateEvent } from "../features/event/eventSlice";
+import { toast } from "react-toastify";
 
 function Events() {
   const events = useSelector((state) => state.event.events);
   const dispatch = useDispatch();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize to compare only the date
 
   const [editId, setEditId] = useState(null);
   const [editData, setEditData] = useState({
@@ -35,112 +38,127 @@ function Events() {
       !editData.venue ||
       !editData.date
     ) {
-      alert("All fields are required");
+      toast.error("All fields are required");
+      return;
+    }
+
+    const conflict = events.find(
+      (e) =>
+        e.id !== editId &&
+        e.date === editData.date &&
+        e.venue.toLowerCase() === editData.venue.toLowerCase()
+    );
+
+    if (conflict) {
+      toast.error("Venue and date conflict with another event.");
       return;
     }
 
     dispatch(updateEvent({ ...editData, id: editId }));
+    toast.success("Event updated successfully");
     setEditId(null);
-    setEditData({
-      title: "",
-      description: "",
-      venue: "",
-      date: "",
-    });
+    setEditData({ title: "", description: "", venue: "", date: "" });
   };
 
   return (
-    <>
-      {events.length > 0 && <div className="py-7 text-xl">Events</div>}
-      <ul className="list-none">
-        {events.map((event) => (
-          <li
+    <div className="max-w-3xl mx-auto mt-10 space-y-5">
+      {events.length > 0 && (
+        <h2 className="text-2xl font-bold text-gray-800">Events</h2>
+      )}
+
+      {events.map((event) => {
+        const eventDate = new Date(event.date);
+        eventDate.setHours(0, 0, 0, 0);
+        const isPast = eventDate < today;
+
+        return (
+          <div
             key={event.id}
-            className="mt-4 bg-zinc-800 text-white p-4 rounded space-y-2"
+            className={`shadow-lg border p-6 rounded-xl ${
+              isPast
+                ? "bg-red-100 border-red-300"
+                : "bg-green-100 border-green-300"
+            }`}
           >
+            {/* Label */}
+            <span
+              className={`inline-block text-xs font-semibold px-2 py-1 rounded-full mb-2 ${
+                isPast ? "bg-red-500 text-white" : "bg-green-500 text-white"
+              }`}
+            >
+              {isPast ? "Past Event" : "Upcoming"}
+            </span>
+
+            {/* Edit mode */}
             {editId === event.id ? (
               <>
                 <input
                   name="title"
                   value={editData.title}
                   onChange={handleChange}
-                  className="w-full p-2 rounded bg-zinc-700"
-                  placeholder="Title"
+                  className="w-full mb-2 px-3 py-2 border rounded"
                 />
                 <textarea
                   name="description"
                   value={editData.description}
                   onChange={handleChange}
-                  className="w-full p-2 rounded bg-zinc-700"
-                  placeholder="Description"
+                  className="w-full mb-2 px-3 py-2 border rounded"
                 />
                 <input
                   name="venue"
                   value={editData.venue}
                   onChange={handleChange}
-                  className="w-full p-2 rounded bg-zinc-700"
-                  placeholder="Venue"
+                  className="w-full mb-2 px-3 py-2 border rounded"
                 />
                 <input
                   type="date"
                   name="date"
                   value={editData.date}
                   onChange={handleChange}
-                  className="w-full p-2 rounded bg-zinc-700"
+                  className="w-full mb-2 px-3 py-2 border rounded"
                 />
               </>
             ) : (
               <>
-                <div className="bg-zinc-800 p-5 rounded-xl shadow-md hover:shadow-lg transition duration-300 space-y-2">
-                  <h2 className="text-2xl font-semibold text-indigo-400">
-                    {event.title}
-                  </h2>
-
-                  <div className="flex items-center gap-2 text-sm text-gray-300">
-                    <span className="material-icons text-indigo-300">
-                      event
-                    </span>
-                    <span>{new Date(event.date).toDateString()}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 text-sm text-gray-300">
-                    <span className="material-icons text-green-300">place</span>
-                    <span>{event.venue}</span>
-                  </div>
-
-                  <p className="text-gray-200 mt-2">{event.description}</p>
-                </div>
+                <h3 className="text-xl font-semibold text-purple-700">
+                  {event.title}
+                </h3>
+                <p className="text-gray-500">
+                  {new Date(event.date).toDateString()}
+                </p>
+                <p className="text-gray-600">📍 {event.venue}</p>
+                <p className="mt-2 text-gray-700">{event.description}</p>
               </>
             )}
 
-            <div className="flex gap-2 mt-2">
+            {/* Buttons */}
+            <div className="flex gap-2 mt-4">
               {editId === event.id ? (
                 <button
                   onClick={handleUpdate}
-                  className="bg-green-600 hover:bg-green-700 px-3 py-1 rounded"
+                  className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
                 >
                   Save
                 </button>
               ) : (
                 <button
                   onClick={() => startEditing(event)}
-                  className="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded"
+                  className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600"
                 >
                   Edit
                 </button>
               )}
-
               <button
                 onClick={() => dispatch(deleteEvent(event.id))}
-                className="bg-red-600 hover:bg-red-700 px-3 py-1 rounded"
+                className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
               >
-                🗑
+                Delete
               </button>
             </div>
-          </li>
-        ))}
-      </ul>
-    </>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
