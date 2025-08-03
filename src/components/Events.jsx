@@ -124,7 +124,7 @@ function Events() {
                   {event.title}
                 </h3>
                 <p className="text-gray-500">
-                  {new Date(event.date).toLocaleDateString("en-GB")}
+                  {new Date(event.date).toDateString()}
                 </p>
                 <p className="text-gray-600">📍 {event.venue}</p>
                 <p className="mt-2 text-gray-700">{event.description}</p>
