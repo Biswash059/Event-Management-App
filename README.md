@@ -18,7 +18,6 @@ A simple and interactive Event Management web application built with **ReactJS**
 - **Tailwind CSS** – Utility-first CSS framework
 - **React Toastify** – Toast notifications
 
-## 📁 Project Structure
 
 
 
